@@ -1,134 +1,135 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-doscuartos.py.py
-------------
-
-Ejemplo de un entorno muy simple y agentes idem
-
-"""
-
-__author__ = 'juliowaissman'
 
 import entornos
 from random import choice
 
-
 class DosCuartos(entornos.Entorno):
-    """
-    Clase para un entorno de dos cuartos. Muy sencilla solo regrupa métodos.
 
-    El estado se define como 
-                (robot, A, B) 
-    donde robot puede tener los valores "A", "B"
-    A y B pueden tener los valores "limpio", "sucio"
+    def sensores(self, estado):
 
-    Las acciones válidas en el entorno son 
-            "irA", "irB", "limpiar" y "noOp". 
-    Todas las acciones son válidas en todos los estados.
+        robot, A, B, C, D, E, F = estado
 
-    Los sensores es una tupla 
-                (robot, limpio?) 
-    con la ubicación del robot y el estado de limieza
+        if robot == 'A':
+            result = A
 
-    """
+        if robot == 'B':
+            result = B
+
+        if robot == 'C':
+            result = C
+
+        if robot == 'D':
+            result = D
+
+        if robot == 'E':
+            result = E
+
+        if robot == 'F':
+            result = F
+
+        return robot,result
+
+    def accion_legal(self, estado, accion):
+
+        robot = estado[0]
+
+        if robot == 'A':
+            return accion in ('irDerecha','bajar','limpiar','noOp')
+
+        if robot == 'B':
+            return accion in ('irIzquierda','irDerecha','bajar','limpiar','noOp')
+
+        if robot == 'C':
+            return accion in ('irIzquierda','bajar','limpiar','noOp')
+
+        if robot == 'D':
+            return accion in ('irDerecha','subir','limpiar','noOp')
+
+        if robot == 'E':
+            return accion in ('irIzquierda','irDerecha','subir','limpiar','noOp')
+
+        if robot == 'F':
+            return accion in ('irIzquierda','subir','limpiar','noOp')
 
     def transicion(self, estado, accion):
+
         if not self.accion_legal(estado, accion):
             raise ValueError("La accion no es legal para este estado")
 
-        robot, A, B = estado
+        robot, A, B, C, D, E, F = estado
 
-        return (('A', A, B) if accion == 'irA' else
-                ('B', A, B) if accion == 'irB' else
-                (robot, A, B) if accion == 'noOp' else
-                ('A', 'limpio', B) if accion == 'limpiar' and robot == 'A' else
-                ('B', A, 'limpio'))
+        if robot == 'A':
+            return (('B', A, B, C, D, E, F) if accion == 'irDerecha' else
+                    ('D', A, B, C, D, E, F) if accion == 'bajar' else
+                    ('A', 'limpio', B, C, D, E, F) if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
 
-    def sensores(self, estado):
-        robot, A, B = estado
-        return robot, A if robot == 'A' else B
+        if robot == 'B':
+            return (('A', A, B, C, D, E, F) if accion == 'irIzquierda' else
+                    ('C', A, B, C, D, E, F) if accion == 'irDerecha' else
+                    ('E', A, B, C, D, E, F) if accion == 'bajar' else
+                    ('B', A, 'limpio', C, D, E, F) if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
 
-    def accion_legal(self, estado, accion):
-        return accion in ('irA', 'irB', 'limpiar', 'noOp')
+        if robot == 'C':
+            return (('B', A, B, C, D, E, F) if accion == 'irIzquierda' else
+                    ('F', A, B, C, D, E, F) if accion == 'bajar' else
+                    ('C', A, B, 'limpio', D, E, F) if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
+
+        if robot == 'D':
+            return (('E', A, B, C, D, E, F) if accion == 'irDerecha' else
+                    ('A', A, B, C, D, E, F) if accion == 'subir' else
+                    ('D', A, B, C, 'limpio', E, F) if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
+
+        if robot == 'E':
+            return (('D', A, B, C, D, E, F) if accion == 'irIzquierda' else
+                    ('F', A, B, C, D, E, F) if accion == 'irDerecha' else
+                    ('B', A, B, C, D, E, F) if accion == 'subir' else
+                    ('E', A, B, C, D, 'limpio', F) if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
+
+        if robot == 'F':
+            return (('E', A, B, C, D, E, F) if accion == 'irIzquierda' else
+                    ('C', A, B, C, D, E, F) if accion == 'subir' else
+                    ('F', A, B, C, D, E, 'limpio') if accion == 'limpiar' else
+                    (robot, A, B, C, D, E, F))
 
     def desempeno_local(self, estado, accion):
-        robot, A, B = estado
+        robot, A, B, C, D, E, F = estado
         return 0 if accion == 'noOp' and A == B == 'limpio' else -1
 
 
 class AgenteAleatorio(entornos.Agente):
-    """
-    Un agente que solo regresa una accion al azar entre las acciones legales
-
-    """
-    def __init__(self, acciones):
-        self.acciones = acciones
 
     def programa(self, percepcion):
-        return choice(self.acciones)
 
+        robot = percepcion[0]
 
-class AgenteReactivoDoscuartos(entornos.Agente):
-    """
-    Un agente reactivo simple
+        if robot == 'A':
+            return choice(['irDerecha','bajar','limpiar','noOp'])
 
-    """
+        if robot == 'B':
+            return choice(['irIzquierda','irDerecha','bajar','limpiar','noOp'])
 
-    def programa(self, percepcion):
-        robot, situacion = percepcion
-        return ('limpiar' if situacion == 'sucio' else
-                'irA' if robot == 'B' else
-                'irB')
+        if robot == 'C':
+            return choice(['irIzquierda','bajar','limpiar','noOp'])
 
+        if robot == 'D':
+            return choice(['irDerecha','subir','limpiar','noOp'])
 
-class AgenteReactivoModeloDosCuartos(entornos.Agente):
-    """
-    Un agente reactivo basado en modelo
+        if robot == 'E':
+            return choice(['irIzquierda','irDerecha','subir','limpiar','noOp'])
 
-    """
-    def __init__(self):
-        """
-        Inicializa el modelo interno en el peor de los casos
-
-        """
-        self.modelo = ['A', 'sucio', 'sucio']
-        self.lugar = {'A': 1, 'B': 2}
-
-    def programa(self, percepcion):
-        robot, situacion = percepcion
-
-        # Actualiza el modelo interno
-        self.modelo[0] = robot
-        self.modelo[self.lugar[robot]] = situacion
-
-        # Decide sobre el modelo interno
-        A, B = self.modelo[1], self.modelo[2]
-        return ('noOp' if A == B == 'limpio' else
-                'limpiar' if situacion == 'sucio' else
-                'irA' if robot == 'B' else
-                'irB')
-
+        if robot == 'F':
+            return choice(['irIzquierda','subir','limpiar','noOp'])
 
 def test():
-    """
-    Prueba del entorno y los agentes
 
-    """
     print "Prueba del entorno de dos cuartos con un agente aleatorio"
-    entornos.simulador(DosCuartos(),
-                       AgenteAleatorio(['irA', 'irB', 'limpiar', 'noOp']),
-                       ('A', 'sucio', 'sucio'), 100)
-
-    print "Prueba del entorno de dos cuartos con un agente reactivo"
-    entornos.simulador(DosCuartos(),
-                       AgenteReactivoDoscuartos(),
-                       ('A', 'sucio', 'sucio'), 100)
-
-    print "Prueba del entorno de dos cuartos con un agente reactivo"
-    entornos.simulador(DosCuartos(),
-                       AgenteReactivoModeloDosCuartos(),
-                       ('A', 'sucio', 'sucio'), 100)
+    entornos.simulador(DosCuartos(),AgenteAleatorio(),('A', 'sucio', 'sucio', 'sucio', 'sucio', 'sucio', 'sucio'), 10)
 
 if __name__ == '__main__':
     test()
