@@ -66,27 +66,29 @@ class Pisos(Entornos.Entorno):
 
     def Sensores(self,estado):
 
-        robot,A,B,C,D,E,F = estado
-
-        if robot == 'A':
-            result = A
-
-        if robot == 'B':
-            result = B
-
-        if robot == 'C':
-            result = C
-
-        if robot == 'D':
-            result = D
-
-        if robot == 'E':
-            result = E
-
-        if robot == 'F':
-            result = F
-
-        return robot,result
+        return estado[0], estado['_ABCDEF'.index(estado[0])]
+#        robot,A,B,C,D,E,F = estado
+#
+#        if robot == 'A':
+#            result = A
+#
+#        if robot == 'B':
+#            result = B
+#
+#        if robot == 'C':
+#            result = C
+#
+#        if robot == 'D':
+#            result = D
+#
+#        if robot == 'E':
+#            result = E
+#
+#        if robot == 'F':
+#            result = F
+#
+#        return robot,result
+#
 
     def Accion_Legal(self,estado,accion):
 
@@ -110,12 +112,20 @@ class Pisos(Entornos.Entorno):
         if robot == 'F':
             return accion in ('Izquierda','Subir','Limpiar','NoOperacion')
 
+        return False  #  Solo para completud del programa
+
     def Transicion(self,estado,accion):
 
         if not self.Accion_Legal(estado,accion):
             raise ValueError("La accion no es legal para este estado")
 
         robot,A,B,C,D,E,F = estado
+
+        # Esto es correcto para una primera prueba, pero estamos en el caso
+        # donde se enumeran todas las acciones en todos los estados, lo que es
+        # equivalente a expresar en forma explícita el grafo que representa el
+        # modelo de transición y esto muy pocas veces es posible. Trata de hacerlo
+        # en forma genérica pero para una primer versión está muy bien.
 
         if robot == 'A':
             return (('B', A, B, C, D, E, F) if accion == 'Derecha' else

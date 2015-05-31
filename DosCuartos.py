@@ -152,6 +152,11 @@ class AgenteReactivoModeloDosCuartos(Entornos.Agente):
 
 """
 
+#  OK, aqui en ves de cambiar los sensores del Entorno, asumiste que 
+#  tu agente no veía el estado de los cuartos, el agante es el correcto
+#  pero el entorno lo deberias haber modificado para que fuera un
+#  entorno adaptado al problema.
+
 class AgenteRacionalP3(Entornos.Agente):
 
     def __init__(self):
@@ -184,6 +189,11 @@ class AgenteRacionalP3(Entornos.Agente):
     Un agente racional que limpia el cuarto el 80% de las veces.
 
 """
+
+#  Aqui hubo una confusión. El agente debe de actuar en forma racional, 
+#  en un entrono que el 80% de las veces que limpia, lo hace, y un 20%
+#  no lo limpia correctamente. El problema es que el que no funciona de
+#  manera determinista es el entorno, no el agente. Mucho cuidado con eso!!!!
 
 class AgenteRacionalP4(Entornos.Agente):
 
